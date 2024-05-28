@@ -9,9 +9,10 @@ namespace Project.Scripts.Fractures
         [SerializeField] private int chunks = 500;
         [SerializeField] private float density = 50;
         [SerializeField] private float internalStrength = 100;
-            
+
         [SerializeField] private Material insideMaterial;
         [SerializeField] private Material outsideMaterial;
+        [SerializeField] private ParticleSystem destructionParticleSystem; // New field for the particle system
 
         private Random rng = new Random();
 
@@ -24,7 +25,7 @@ namespace Project.Scripts.Fractures
         public ChunkGraphManager FractureGameobject()
         {
             var seed = rng.Next();
-            return Fracture.FractureGameObject(
+            var chunkGraphManager = Fracture.FractureGameObject(
                 gameObject,
                 anchor,
                 seed,
@@ -34,6 +35,15 @@ namespace Project.Scripts.Fractures
                 internalStrength,
                 density
             );
+
+            if (destructionParticleSystem != null)
+            {
+                // Instantiate and enable the particle system at the position of the fractured object
+                ParticleSystem particleInstance = Instantiate(destructionParticleSystem, transform.position, Quaternion.identity);
+                particleInstance.Play();
+            }
+
+            return chunkGraphManager;
         }
     }
 }
